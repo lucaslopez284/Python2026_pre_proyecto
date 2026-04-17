@@ -8,101 +8,100 @@ import csv
 ## ● imprima las primeras 10 filas del dataset.
 ## Esto permitirá verificar que el archivo fue abierto correctamente.
 
-def leer_dataset_diez_primeras(ruta, separacion):
-    file = open(ruta, "r", encoding="utf-8")
-    csv_reader = csv.reader(file, delimiter=separacion)
+def read_dataset_first_ten(path, delimiter):
+    file = open(path, "r", encoding="utf-8")
+    csv_reader = csv.reader(file, delimiter=delimiter)
     # Imprime las primeraas 10 col
-    i = 0
-    for col in csv_reader:
-        if i < 10:
-          print(col)
-          i += 1
+    counter = 0
+    for row in csv_reader:
+        if counter < 10:
+          print(row)
+          counter += 1
     file.close()
 
 ## Ejercicio 2.B
 ## Escribir una función que retorne una lista completa de columnas del dataset.
 
-def obtener_columnas(ruta, separacion) -> list:
-    with open(ruta, "r", encoding="utf-8") as abrir_arch:
-        leer_data = csv.reader(abrir_arch, delimiter=separacion)
-        columnas = next(leer_data)
-        return columnas
+def get_columns(path, delimiter) -> list:
+    with open(path, "r", encoding="utf-8") as open_file:
+        read_data = csv.reader(open_file, delimiter=delimiter)
+        columns = next(read_data)
+        return columns
     
 ## Ejercicio 2.C
 ## Escribir una función que retorne la posición (índice) de cada columna dentro del archivo.
 
-def retornar_pos_col(ruta, separacion)-> dict:
-  archivo = open(ruta, "r", encoding="utf-8") 
-  leer_data = csv.reader(archivo, delimiter=separacion) 
-  posiciones = {}
-  cols = next(leer_data)
-    # enumerate retorna = indice (se guarda en i) y valor (se guarda en col)
-  for indice, columna in enumerate(cols):
-    posiciones[columna] = indice
-  archivo.close()
-  return posiciones
+def return_column_positions(path, delimiter) -> dict:
+  file = open(path, "r", encoding="utf-8") 
+  reader = csv.reader(file, delimiter=delimiter) 
+  positions = {}
+  cols = next(reader)
+  for index, column in enumerate(cols):
+    positions[column] = index
+  file.close()
+  return positions
 
 ## Ejercicio 2.D
 ## Escribir una función que retorne la cantidad total de registros del dataset.
 
-def total_registros(ruta, separacion) -> int:
-  archivo = open(ruta, "r", encoding="utf-8") 
-  leer_data = csv.reader(archivo, delimiter=separacion) 
-  cantidad_registros = 0
-  for col in leer_data: # recorre cada registro
-    cantidad_registros += 1
-  archivo.close()
-  return cantidad_registros - 1 
+def total_records(path, delimiter) -> int:
+  file = open(path, "r", encoding="utf-8") 
+  reader = csv.reader(file, delimiter=delimiter) 
+  total_count = 0
+  for col in reader: # recorre cada registro
+    total_count += 1
+  file.close()
+  return total_count - 1 
 
 ## Ejercicio 2.E
 ## Escribir una función que retorne las columnas que posean al menos un dato con registro nulo.
 
-def lista_de_nulos(ruta, separacion) -> list:
-   resultado = set()
-   with open (ruta, encoding="utf-8") as archivo:
-      reader = csv.DictReader(archivo, delimiter=separacion)
-      for fila in reader:
-         for columna, valor in fila.items():
-            if valor is None or valor.strip() == "":
-               resultado.add(columna)
-   return list(resultado)
+def list_null_columns(path, delimiter) -> list:
+   result = set()
+   with open (path, encoding="utf-8") as file:
+      reader = csv.DictReader(file, delimiter=delimiter)
+      for row in reader:
+         for column, value in row.items():
+            if value is None or value.strip() == "":
+               result.add(column)
+   return list(result)
 
 ## Ejercicio 2.F
 ## Escribir una función que retorne para cada columna el porcentaje de registros nulos.
 
-def porcentaje_de_nulos(ruta, separacion) -> dict:
-   resultado = {}
-   cant_registros = total_registros(ruta, separacion)
-   with open (ruta, encoding="utf-8") as archivo:
-      reader = csv.DictReader(archivo, delimiter=separacion)
-      for fila in reader:
-         for columna, valor in fila.items():
-            if columna not in resultado:
-               resultado[columna] = 0
-            if valor is None or valor.strip() == "":
-               resultado[columna] = resultado[columna] + 1
+def null_percentage(path, delimiter) -> dict:
+   result = {}
+   total_count = total_records(path, delimiter)
+   with open (path, encoding="utf-8") as file:
+      reader = csv.DictReader(file, delimiter=delimiter)
+      for row in reader:
+         for column, value in row.items():
+            if column not in result:
+               result[column] = 0
+            if value is None or value.strip() == "":
+               result[column] = result[column] + 1
    
-   for columna in resultado:
-      resultado[columna] = (resultado[columna] / cant_registros) * 100
+   for column in result:
+      result[column] = (result[column] / total_count) * 100
 
-   return resultado
+   return result
 
 ## Ejercicio 2.G
 ## Escribir una función que, dado el nombre de una columna, retorne la cantidad de valores
 ## distintos presentes en dicha columna. Si la columna no existe se debe informar de dicha situación
 
-def cantidad_valores_distintos(ruta, separacion, nombre_columna) -> int:
-   resultado = set()
-   with open (ruta, encoding="utf-8") as archivo:
-      reader = csv.DictReader(archivo, delimiter=separacion)
-      if nombre_columna not in reader.fieldnames:
+def count_distinct_values(path, delimiter, column_name) -> int:
+   result = set()
+   with open (path, encoding="utf-8") as file:
+      reader = csv.DictReader(file, delimiter=delimiter)
+      if column_name not in reader.fieldnames:
             print("La columna no existe")
             return 0
-      for fila in reader:
-         valor = fila[nombre_columna]
-         if valor is not None and valor.strip() != "":
-                resultado.add(valor)
-   return len(resultado)
+      for row in reader:
+         value = row[column_name]
+         if value is not None and value.strip() != "":
+                result.add(value)
+   return len(result)
 
 
 
@@ -115,23 +114,23 @@ def cantidad_valores_distintos(ruta, separacion, nombre_columna) -> int:
 ## "Chile": 80
 ## }
 
-def frecuencia_valores_distintos(ruta, separacion, nombre_columna) -> dict:
-   resultado = {}
-   with open (ruta, encoding="utf-8") as archivo:
-      reader = csv.DictReader(archivo, delimiter=separacion)
-      if nombre_columna not in reader.fieldnames:
+def distinct_values_frequency(path, delimiter, column_name) -> dict:
+   result = {}
+   with open (path, encoding="utf-8") as file:
+      reader = csv.DictReader(file, delimiter=delimiter)
+      if column_name not in reader.fieldnames:
             print("La columna no existe")
-            return resultado
-      for fila in reader:
-         valor = fila[nombre_columna]
-         if valor is None or valor.strip() == "":
+            return result
+      for row in reader:
+         value = row[column_name]
+         if value is None or value.strip() == "":
             continue
-         if valor not in resultado:
-               resultado[valor] = 1
+         if value not in result:
+               result[value] = 1
          else:
-            resultado[valor] = resultado[valor] + 1
-   resultado_ordenado=dict(sorted(resultado.items(), key=lambda valor: valor[1], reverse=True))
-   return resultado_ordenado
+            result[value] = result[value] + 1
+   sorted_result = dict(sorted(result.items(), key=lambda value: value[1], reverse=True))
+   return sorted_result
 
 ## Ejercicio 2.I
 ## Escribir una función que dada una columna y su tipo retorne lo establecido a continuación
@@ -140,42 +139,40 @@ def frecuencia_valores_distintos(ruta, separacion, nombre_columna) -> dict:
 ## ● coordinate: menor valor encontrado, mayor valor encontrado.
 ## ● text: cantidad de caracteres del texto más corto encontrado, cantidad de caracteres del texto más largo encontrado.
 
-def minimo_maximo_columna(ruta, separacion, nombre_columna, tipo) -> tuple:
-   resultado = ()
-   lista = []
-   with open (ruta, encoding="utf-8") as archivo:
-      reader = csv.DictReader(archivo, delimiter=separacion)
-      if nombre_columna not in reader.fieldnames:
+def column_min_max(path, delimiter, column_name, data_type) -> tuple:
+   result = ()
+   values_list = []
+   with open (path, encoding="utf-8") as file:
+      reader = csv.DictReader(file, delimiter=delimiter)
+      if column_name not in reader.fieldnames:
             print("La columna no existe")
-            return resultado
-      for fila in reader:
-         valor = fila[nombre_columna]
-         if valor is None or valor.strip() == "":
+            return result
+      for row in reader:
+         value = row[column_name]
+         if value is None or value.strip() == "":
              continue
-         lista.append(valor)
-      match tipo:
+         values_list.append(value)
+      match data_type:
          case "numeric":
-            numeros = [float(valor) for valor in lista]
-            promedio = sum(numeros) / len(numeros)
-            return min(numeros), max(numeros), promedio
+            numbers = [float(value) for value in values_list]
+            average = sum(numbers) / len(numbers)
+            return min(numbers), max(numbers), average
          case "coordinate":
-            return min(lista), max(lista)
+            coords = [float(value) for value in values_list]
+            return min(coords), max(coords)
          case "text":
-            longitudes = [len(valor) for valor in lista]
-            return min(longitudes), max(longitudes)
+            lengths = [len(value) for value in values_list]
+            return min(lengths), max(lengths)
          case _:
-            return resultado
+            return result
 
 ## Ejercicio 2.J
 ## Escribir una función que identifique columnas cuyo contenido sea completamente nulo en todos los registros.
 
-def columnas_con_todo_nulo(ruta, separacion) -> list:
-   columnas_info_nulos = porcentaje_de_nulos(ruta, separacion)
-   resultado = []
-   for columna, porcentaje in columnas_info_nulos.items():
-      if porcentaje == 100:
-         resultado.append(columna)
-   return resultado
-    
-
-      
+def columns_all_null(path, delimiter) -> list:
+   null_columns_info = null_percentage(path, delimiter)
+   result = []
+   for column, percentage in null_columns_info.items():
+      if percentage == 100:
+         result.append(column)
+   return result

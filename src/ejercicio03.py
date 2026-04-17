@@ -12,32 +12,32 @@ import datetime
 ## ● cantidad de registros inválidos
 ## ● listado de registros incorrectos.
 
-def es_numero(valor: str) -> bool:
+def is_number(value: str) -> bool:
     try:
-        float(valor)
+        float(value)
         return True
     except (ValueError, TypeError):
         return False
     
-def en_rango(valor, min, max) -> bool:
-    return valor >= min and valor <= max
+def in_range(value, min_val, max_val) -> bool:
+    return value >= min_val and value <= max_val
 
-def coordenadas_invalidas(ruta, separacion, tipo_id) -> tuple:
-    incorrectos = []
-    with open(ruta, "r", encoding="utf-8") as archivo:
-        reader = csv.DictReader(archivo, delimiter=separacion)
-        for fila in reader:
-            latitud_provisoria = fila["decimalLatitude"]
-            longitud_provisoria = fila["decimalLongitude"]
-            if es_numero(latitud_provisoria) and es_numero(longitud_provisoria):
-                latitud = float(latitud_provisoria)
-                longitud = float(longitud_provisoria)
-                if en_rango(latitud, -90, 90) and en_rango (longitud, -180, 180):
+def invalid_coordinates(path, sep, id_type) -> tuple:
+    incorrect = []
+    with open(path, "r", encoding="utf-8") as file:
+        reader = csv.DictReader(file, delimiter=sep)
+        for row in reader:
+            temp_latitude = row["decimalLatitude"]
+            temp_longitude = row["decimalLongitude"]
+            if is_number(temp_latitude) and is_number(temp_longitude):
+                latitude = float(temp_latitude)
+                longitude = float(temp_longitude)
+                if in_range(latitude, -90, 90) and in_range(longitude, -180, 180):
                     continue
-                incorrectos.append(fila[tipo_id])
+                incorrect.append(row[id_type])
             else:
-                incorrectos.append(fila[tipo_id])
-    return len(incorrectos), incorrectos
+                incorrect.append(row[id_type])
+    return len(incorrect), incorrect
 
 
 ## Ejercicio 3.B
@@ -45,23 +45,23 @@ def coordenadas_invalidas(ruta, separacion, tipo_id) -> tuple:
 ## ● exista decimalLatitude pero no decimalLongitude
 ## ● exista decimalLongitude pero no decimalLatitude.
 
-def verficacion_coordenadas(ruta, separacion, tipo_id):
-    with open(ruta, "r", encoding="utf-8") as archivo:
-        reader = csv.DictReader(archivo, delimiter=separacion)
-        for fila in reader:
+def coordinate_verification(path, sep, id_type):
+    with open(path, "r", encoding="utf-8") as file:
+        reader = csv.DictReader(file, delimiter=sep)
+        for row in reader:
             if (
-                fila["decimalLatitude"] is not None and fila["decimalLatitude"].strip() != ""
+                row["decimalLatitude"] is not None and row["decimalLatitude"].strip() != ""
             ) and (
-                fila["decimalLongitude"] is None or fila["decimalLongitude"].strip() == ""
+                row["decimalLongitude"] is None or row["decimalLongitude"].strip() == ""
             ):
-                print(f"El registro de id {fila[tipo_id]} tiene decimalLatitude pero no decimalLongitude")
+                print(f"The record with id {row[id_type]} has decimalLatitude but not decimalLongitude")
 
             elif (
-                fila["decimalLatitude"] is None or fila["decimalLatitude"].strip() == ""
+                row["decimalLatitude"] is None or row["decimalLatitude"].strip() == ""
             ) and (
-                fila["decimalLongitude"] is not None and fila["decimalLongitude"].strip() != ""
+                row["decimalLongitude"] is not None and row["decimalLongitude"].strip() != ""
             ):
-                print(f"El registro de id {fila[tipo_id]} tiene decimalLongitude pero no decimalLatitude")
+                print(f"The record with id {row[id_type]} has decimalLongitude but not decimalLatitude")
 
 
 
@@ -73,8 +73,8 @@ def verficacion_coordenadas(ruta, separacion, tipo_id):
 ## Puede consultar con su ayudante cómo obtener el formato válido de una fecha. 
 ## Aplicar esta función de validación a todas los atributos posibles.
 
-def verificacion_fecha(fecha):
-    fecha_str = fecha_str.replace("/", "-") #convierto a un mismo separador
+def date_verification(date):
+    date_str = date_str.replace("/", "-") #convierto a un mismo separador
 
 
 ## Ejercicio 3.D
@@ -83,17 +83,17 @@ def verificacion_fecha(fecha):
 ## ● cuántos registros duplicados existen
 ## ● qué identificador se repite.
 
-def ids_duplicados(ruta, separacion, tipo_id):
-    lista_ids = set() # el set usa una tecnica de hashing, mucho mas eficiente que una lista normal
-    duplicados = set()
-    with open(ruta, "r", encoding="utf-8") as archivo:
-        reader = csv.DictReader(archivo, delimiter=separacion)
-        for fila in reader:
-            if fila[tipo_id] not in lista_ids:
-                lista_ids.add(fila[tipo_id])
+def duplicate_ids(path, sep, id_type):
+    id_list = set() # el set usa una tecnica de hashing, mucho mas eficiente que una lista normal
+    duplicates = set()
+    with open(path, "r", encoding="utf-8") as file:
+        reader = csv.DictReader(file, delimiter=sep)
+        for row in reader:
+            if row[id_type] not in id_list:
+                id_list.add(row[id_type])
             else:
-                duplicados.add(fila[tipo_id])
-    return len(duplicados), list(duplicados)
+                duplicates.add(row[id_type])
+    return len(duplicates), list(duplicates)
 
 ## Ejercicio 3.E
 ## El campo countryCode puede tomar solo un conjunto de valores específicos, investigar
@@ -106,17 +106,17 @@ def ids_duplicados(ruta, separacion, tipo_id):
 ## ● el valor sea negativo
 ## ● el valor sea excesivamente grande (por ejemplo > 100).
 
-def validacion_incertidumbre_coordenada(ruta, separacion, tipo_id):
-    with open(ruta, "r", encoding="utf-8") as archivo:
-        reader = csv.DictReader(archivo, delimiter=separacion)
-        for fila in reader:
-            if es_numero(fila["coordinateUncertaintyInMeters"]):
-                numero = float(fila["coordinateUncertaintyInMeters"])
-                if en_rango(numero, 0, 100):
+def coordinate_uncertainty_validation(path, sep, id_type):
+    with open(path, "r", encoding="utf-8") as file:
+        reader = csv.DictReader(file, delimiter=sep)
+        for row in reader:
+            if is_number(row["coordinateUncertaintyInMeters"]):
+                number = float(row["coordinateUncertaintyInMeters"])
+                if in_range(number, 0, 100):
                     continue
-                print(f"El registro de id {fila[tipo_id]} tiene no cumple con la validacion")
+                print(f"The record with id {row[id_type]} does not meet the validation")
             else:
-                print(f"El registro de id {fila[tipo_id]} tiene no cumple con la validacion")
+                print(f"The record with id {row[id_type]} does not meet the validation")
 
 ## Ejercicio 3.G
 ## Escribir una función que genere un resumen de calidad del dataset, incluyendo:
